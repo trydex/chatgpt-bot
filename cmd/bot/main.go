@@ -6,7 +6,7 @@ import (
 
 func main() {
 
-	chatGPTService := services.NewChatGPTService("YOUR_OPENAI_TOKEN")
-	tgBot := services.NewTgBot("YOUR_BOT_TOKEN", chatGPTService)
+	chatGPTService := services.NewChatGPTService("YOUR_KEY")
+	tgBot := services.NewTgBot("YOUR_KEY", chatGPTService)
 	tgBot.Run()
 }

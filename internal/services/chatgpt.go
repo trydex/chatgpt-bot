@@ -12,7 +12,7 @@ type chatGptService struct {
 }
 
 type ChatGPTService interface {
-	CreateChatCompletion(chatId int64, content string, clearContext bool) (openai.ChatCompletionResponse, error)
+	CreateChatCompletion(chatId int64, content string, clearContext bool, useGPT4 bool) (openai.ChatCompletionResponse, error)
 }
 
 func NewChatGPTService(token string) ChatGPTService {
@@ -22,7 +22,7 @@ func NewChatGPTService(token string) ChatGPTService {
 	}
 }
 
-func (s *chatGptService) CreateChatCompletion(chatId int64, content string, clearContext bool) (resp openai.ChatCompletionResponse, err error) {
+func (s *chatGptService) CreateChatCompletion(chatId int64, content string, clearContext bool, useGPT4 bool) (resp openai.ChatCompletionResponse, err error) {
 	_, ok := s.historyMessages[chatId]
 	if !ok || clearContext {
 		s.historyMessages[chatId] = make([]openai.ChatCompletionMessage, 0)
@@ -33,10 +33,14 @@ func (s *chatGptService) CreateChatCompletion(chatId int64, content string, clea
 		Content: content,
 	})
 
+	model := openai.GPT3Dot5Turbo
+	if useGPT4 {
+		model = openai.GPT4
+	}
 	resp, err = s.client.CreateChatCompletion(
 		context.Background(),
 		openai.ChatCompletionRequest{
-			Model:    openai.GPT3Dot5Turbo,
+			Model:    model,
 			Messages: s.historyMessages[chatId],
 		},
 	)
